@@ -63,6 +63,14 @@
 					        <a href="{{route('products_edit', $product->id)}}" class="btn btn-success form-control">Edit</a>
                             @endcan
 					    </div>
+                        <div class="col col-2">
+                            <form action="{{ route('buy', $product->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-primary">
+                                    Buy Product
+                                </button>
+                            </form>
+                        </div>
 					    <div class="col col-2">
                             @can('delete_products')
 					        <a href="{{route('products_delete', $product->id)}}" class="btn btn-danger form-control">Delete</a>
@@ -75,6 +83,7 @@
                         <tr><th>Model</th><td>{{$product->model}}</td></tr>
                         <tr><th>Code</th><td>{{$product->code}}</td></tr>
                         <tr><th>Price</th><td>{{$product->price}}</td>
+                        <tr><th>Quantity</th><td>{{$product->qty}}</td>
                         <tr><th>Description</th><td>{{$product->description}}</td></tr>
                     </table>
                 </div>

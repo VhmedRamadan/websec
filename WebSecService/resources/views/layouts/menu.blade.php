@@ -16,9 +16,19 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{route('products_list')}}">Products</a>
             </li>
-            @can('show_users')
+            @can('admin_users')
             <li class="nav-item">
                 <a class="nav-link" href="{{route('users')}}">Users</a>
+            </li>
+            @endcan
+            @can('admin_users')
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('create')}}">Create User</a>
+            </li>
+            @endcan
+            @can('show_users')
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('customers')}}">Customers</a>
             </li>
             @endcan
         </ul>
@@ -26,6 +36,9 @@
             @auth
             <li class="nav-item">
                 <a class="nav-link" href="{{route('profile')}}">{{auth()->user()->name}}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('profile')}}">{{auth()->user()->credit}}</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{route('do_logout')}}">Logout</a>

@@ -49,7 +49,10 @@ $(document).ready(function(){
                 </select>
             </div>
             @endcan
-
+            <div class="col-6">
+                <label for="credit" class="form-label">Credit:</label>
+                <input type="numeric" class="form-control" placeholder="credit" name="credit" required value="{{$user->credit}}">
+            </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>

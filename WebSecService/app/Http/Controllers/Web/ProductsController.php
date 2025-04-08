@@ -55,6 +55,7 @@ class ProductsController extends Controller {
 	        'model' => ['required', 'string', 'max:256'],
 	        'description' => ['required', 'string', 'max:1024'],
 	        'price' => ['required', 'numeric'],
+	        'qty' => ['required', 'numeric'],
 	    ]);
 
 		$product = $product??new Product();
@@ -72,4 +73,65 @@ class ProductsController extends Controller {
 
 		return redirect()->route('products_list');
 	}
+	public function buy($id)
+    {
+        $product = Product::findOrFail($id);
+        $user = auth()->user();
+
+        // Check if the product is in stock
+        if ($product->qty <= 0) {
+            return redirect()->route('products_list')->with('error', 'Product is out of stock!');
+        }
+
+        // Check if the user has sufficient credit
+        if ($user->credit < $product->price) {
+            return redirect()->route('insufficient.credit');
+			// return redirect()->route('products_list')->with('error', 'insufficient credit!');
+        }
+
+        // Deduct the product price from the user's credit
+        $user->credit -= $product->price;
+        $user->save();
+
+        // Decrease the product stock by 1
+        $product->qty -= 1;
+        $product->save();
+
+        // Insert the purchase record into the bought_products table
+        DB::table('bought_products')->insert([
+            'uid' => $user->id,
+            'pid' => $product->id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // Add a success message to the session
+        return redirect()->route('products_list')->with('success', 'Product purchased successfully!');
+    }
+	public function boughtProducts()
+    {
+        $user = auth()->user();
+
+        // Check if the user is a customer
+        if ($user->hasRole('Customer')) {
+            // Fetch only the products bought by the logged-in customer
+            $boughtProducts = DB::table('bought_products')
+                ->join('users', 'bought_products.uid', '=', 'users.id')
+                ->join('products', 'bought_products.pid', '=', 'products.id')
+                ->where('bought_products.uid', $user->id)
+                ->select('bought_products.*', 'users.name as user_name', 'products.name as product_name')
+                ->orderBy('bought_products.created_at', 'DESC')
+                ->get();
+        } else {
+            // Fetch all bought products for employees or admins
+            $boughtProducts = DB::table('bought_products')
+                ->join('users', 'bought_products.uid', '=', 'users.id')
+                ->join('products', 'bought_products.pid', '=', 'products.id')
+                ->select('bought_products.*', 'users.name as user_name', 'products.name as product_name')
+                ->orderBy('bought_products.created_at', 'DESC')
+                ->get();
+        }
+
+        return view('products.boughtproductlist', compact('boughtProducts'));
+    }
 } 

@@ -41,7 +41,12 @@
             <label for="name" class="form-label">Description:</label>
             <textarea type="text" class="form-control" placeholder="Description" name="description" required>{{$product->description}}</textarea>
         </div>
+        <div class="col-6">
+            <label for="qty" class="form-label">Quantity:</label>
+            <input type="numeric" class="form-control" placeholder="Quantity" name="qty" required value="{{$product->qty}}">
+        </div>
     </div>
+    
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 @endsection

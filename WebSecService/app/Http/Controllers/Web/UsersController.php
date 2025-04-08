@@ -51,6 +51,7 @@ class UsersController extends Controller {
 	    $user->name = $request->name;
 	    $user->email = $request->email;
 	    $user->password = bcrypt($request->password); //Secure
+        $user->assignRole('customer');
 	    $user->save();
 
         return redirect('/');
@@ -104,7 +105,7 @@ class UsersController extends Controller {
         if(auth()->id()!=$user?->id) {
             if(!auth()->user()->hasPermissionTo('edit_users')) abort(401);
         }
-    
+        
         $roles = [];
         foreach(Role::all() as $role) {
             $role->taken = ($user->hasRole($role->name));
@@ -126,8 +127,12 @@ class UsersController extends Controller {
         if(auth()->id()!=$user->id) {
             if(!auth()->user()->hasPermissionTo('show_users')) abort(401);
         }
+        if ($request->credit < $user->credit) {
+            return redirect()->back()->withErrors('Credit can only be increased, not reduced.');
+        }
 
         $user->name = $request->name;
+        $user->credit = $request->credit;
         $user->save();
 
         if(auth()->user()->hasPermissionTo('admin_users')) {
@@ -148,7 +153,7 @@ class UsersController extends Controller {
 
         if(!auth()->user()->hasPermissionTo('delete_users')) abort(401);
 
-        //$user->delete();
+        $user->delete();
 
         return redirect()->route('users');
     }
@@ -187,4 +192,35 @@ class UsersController extends Controller {
 
         return redirect(route('profile', ['user'=>$user->id]));
     }
+    public function create()
+    {
+        $roles = Role::all(); // Fetch all roles to show in dropdown
+        return view('users.create', compact('roles'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name'     => 'required|max:255',
+            'email'    => 'required|unique:users,email',
+            'password' => 'required',
+            'role'     => 'required|exists:roles,name',
+        ]);
+
+        $user =  new User();
+	    $user->name = $request->name;
+	    $user->email = $request->email;
+	    $user->password = bcrypt($request->password); //Secure
+        $user->assignRole($request->role);
+	    $user->save();
+
+       
+
+        return redirect('/')->with('success', 'User created and role assigned!');
+    }
+    public function listCustomers()
+{
+    $customers = User::role('customer')->get(); // Spatie method to filter by role
+    return view('users.customers', compact('customers'));
+}
 } 

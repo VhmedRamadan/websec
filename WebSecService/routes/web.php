@@ -27,6 +27,7 @@ Route::middleware(['auth'])->group(function(){
     Route::post('products/save/{product?}', [ProductsController::class, 'save'])->name('products_save');
     Route::get('products/delete/{product}', [ProductsController::class, 'delete'])->name('products_delete');
     Route::post('/buy-product/{product}', [ProductsController::class, 'buy'])->name('buy');
+    Route::get('bought', [ProductsController::class, 'boughtProducts'])->name('bought');
 });
 Route::get('/', function () {
     return view('welcome');

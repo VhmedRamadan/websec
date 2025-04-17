@@ -30,6 +30,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="{{route('customers')}}">Customers</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('bought')}}">bought products</a>
+            </li>
             @endcan
         </ul>
         <ul class="navbar-nav">

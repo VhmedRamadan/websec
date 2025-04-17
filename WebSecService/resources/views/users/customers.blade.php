@@ -40,6 +40,7 @@
                         @can('delete_users')
                         <a class="btn btn-danger" href='{{route('users_delete', [$user->id])}}'>Delete</a>
                         @endcan
+                        <a class="btn btn-primary" href='{{route('bought', [$user->id])}}'>show purchases</a>
                     </td>
                 </tr>
                 @endforeach

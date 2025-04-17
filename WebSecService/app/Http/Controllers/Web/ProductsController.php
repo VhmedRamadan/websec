@@ -108,7 +108,7 @@ class ProductsController extends Controller {
         // Add a success message to the session
         return redirect()->route('products_list')->with('success', 'Product purchased successfully!');
     }
-	public function boughtProducts()
+	public function boughtProducts(Request $request)
     {
         $user = auth()->user();
 
@@ -116,9 +116,9 @@ class ProductsController extends Controller {
         if ($user->hasRole('Customer')) {
             // Fetch only the products bought by the logged-in customer
             $boughtProducts = DB::table('bought_products')
-                ->join('users', 'bought_products.uid', '=', 'users.id')
+                ->join('users', 'bought_products.uid', '=', $user_>$request)
                 ->join('products', 'bought_products.pid', '=', 'products.id')
-                ->where('bought_products.uid', $user->id)
+                ->where('bought_products.uid', $user->$id)
                 ->select('bought_products.*', 'users.name as user_name', 'products.name as product_name')
                 ->orderBy('bought_products.created_at', 'DESC')
                 ->get();
@@ -132,6 +132,6 @@ class ProductsController extends Controller {
                 ->get();
         }
 
-        return view('products.boughtproductlist', compact('boughtProducts'));
+        return view('products.bought', compact('boughtProducts'));
     }
 } 
